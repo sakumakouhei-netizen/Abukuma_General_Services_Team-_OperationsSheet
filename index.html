@@ -43,12 +43,19 @@
       font-size: 1.8rem;
     }
 
-    .date-container {
-      margin-top: 10px;
+    .header-sub-container {
+      margin-top: 12px;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .date-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-weight: bold;
     }
 
@@ -59,6 +66,24 @@
       font-size: 1rem;
       background-color: #f0f0f0;
       color: #555;
+    }
+
+    .spreadsheet-btn {
+      display: inline-flex;
+      align-items: center;
+      background-color: #1d6f42; /* スプレッドシート風の緑色 */
+      color: white;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .spreadsheet-btn:hover {
+      background-color: #155231;
     }
 
     .tabs {
@@ -280,7 +305,6 @@
       text-align: right;
     }
 
-    /* モーダル表示用スタイル */
     .modal {
       display: none;
       position: fixed;
@@ -307,10 +331,15 @@
   <div class="container">
     <header>
       <h1>☕ 喫茶 運営シート</h1>
-      <div class="date-container">
-        <span>シート出力日:</span>
-        <!-- 最上部の日付は自動入力＆固定表示 -->
-        <input type="date" id="sheet-date" readonly>
+      <div class="header-sub-container">
+        <div class="date-container">
+          <span>シート出力日:</span>
+          <input type="date" id="sheet-date" readonly>
+        </div>
+        <!-- ★ スプレッドシートを開くボタン -->
+        <a id="spreadsheet-link" href="#" target="_blank" class="spreadsheet-btn">
+          📊 スプレッドシートを開く
+        </a>
       </div>
     </header>
 
@@ -333,7 +362,6 @@
           <div class="section-header-flex">
             <h2>販売予定（目標設定）</h2>
             <div class="history-controls">
-              <!-- 呼び出し専用の日付選択欄とボタン -->
               <input type="date" id="history-date">
               <button type="button" class="load-btn" onclick="loadHistoryData()">🔄 過去データ呼出</button>
               <button type="button" class="master-btn" onclick="openMasterModal()">⚙️ 商品マスター編集</button>
@@ -349,7 +377,6 @@
               </tr>
             </thead>
             <tbody>
-              <!-- JSで動的に追加 -->
             </tbody>
           </table>
           <button type="button" class="add-row-btn" onclick="addPlanRow()">+ 商品行を追加</button>
@@ -392,7 +419,6 @@
               </tr>
             </thead>
             <tbody>
-              <!-- JSで動的に追加 -->
             </tbody>
           </table>
           <button type="button" class="add-row-btn" onclick="addSalesRow()">+ 実績商品行を追加</button>
@@ -437,7 +463,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- JSで展開 -->
         </tbody>
       </table>
       <button type="button" class="add-row-btn" onclick="addMasterRow()">+ 新規商品を追加</button>
@@ -450,9 +475,15 @@
 
   <script>
     const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx0pqe7cYm0raO3Ygr-_QzbDPwDigQoJ1YK1nq1EfYancM-plqOkHLGTGgXJqqxa9XuPw/exec';
+    
+    // 指定のスプレッドシートURLを設定
+    const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1oHobZQNhje3sq7RwdPbG_mf9Lk-ZnObYscafKGZq_8c/edit?gid=1706749801#gid=1706749801';
+
+    // スプレッドシートへのリンクを設定
+    document.getElementById('spreadsheet-link').href = SPREADSHEET_URL;
+
     let itemMaster = [];
 
-    // 出力日と呼び出し用の日付の初期値を「本日」に設定
     const today = new Date();
     document.getElementById('sheet-date').valueAsDate = today;
     document.getElementById('history-date').valueAsDate = today;
@@ -561,7 +592,6 @@
       document.getElementById('actual-total-sales').innerText = totalSales.toLocaleString();
     }
 
-    // ★ 過去データの呼出処理（ history-date から日付を取得 ）
     async function loadHistoryData() {
       const date = document.getElementById('history-date').value;
       if (!date) {
@@ -686,7 +716,7 @@
 
       const formData = {
         action: actionType,
-        date: document.getElementById('sheet-date').value, // 本日の日付で出力・保存
+        date: document.getElementById('sheet-date').value,
         goal: goal,
         plans: plans,
         kitchen: document.getElementById('kitchen-input').value,
