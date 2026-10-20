@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>喫茶 運営シート</title>
+  <style>
+    :root {
+      --primary-color: #6f4e37;
+      --secondary-color: #a0522d;
+      --accent-color: #d2b48c;
+      --bg-color: #fdfbf7;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0d7cd;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 15px 0;
+      border-bottom: 2px solid var(--primary-color);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--primary-color);
+      font-size: 1.8rem;
+    }
+
+    .date-container {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+    }
+
+    .date-container input[type="date"] {
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: #f0f0f0;
+      color: #555;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-button.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+      background-color: rgba(111, 78, 55, 0.05);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .section-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section-header-flex h2 {
+      margin-bottom: 0;
+    }
+
+    .history-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .history-controls input[type="date"] {
+      padding: 5px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+      border-left: 4px solid var(--secondary-color);
+      padding-left: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 0.95rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      background-color: #fff;
+    }
+
+    textarea {
+      height: 90px;
+      resize: vertical;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f5efe6;
+      color: var(--primary-color);
+      font-size: 0.9rem;
+    }
+
+    .add-row-btn {
+      background-color: #f5efe6;
+      color: var(--primary-color);
+      border: 1px dashed var(--primary-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+
+    .load-btn {
+      background-color: var(--accent-color);
+      color: #333;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .master-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .total-box {
+      background-color: #f5efe6;
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+      font-weight: bold;
+    }
+
+    .total-item span {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-save {
+      background-color: #2e8b57;
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .btn-pdf {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #ccc !important;
+      cursor: not-allowed;
+    }
+
+    .readonly-calc {
+      background-color: #f9f9f9;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    /* モーダル表示用スタイル */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>☕ 喫茶 運営シート</h1>
+      <div class="date-container">
+        <span>シート出力日:</span>
+        <!-- 最上部の日付は自動入力＆固定表示 -->
+        <input type="date" id="sheet-date" readonly>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-button active" onclick="openTab(event, 'before-opening')">① 営業前（目標・配置）</button>
+      <button class="tab-button" onclick="openTab(event, 'after-closing')">② 営業後（売上・振り返り）</button>
+    </div>
+
+    <form id="operations-form" onsubmit="return false;">
+      <!-- ① 営業前 タブ内容 -->
+      <div id="before-opening" class="tab-content active">
+        <div class="card">
+          <h2>本時の目標</h2>
+          <div class="form-group">
+            <textarea id="goal-text" placeholder="例：丁寧な接客とチーム内でのスムーズな連携を徹底する"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-header-flex">
+            <h2>販売予定（目標設定）</h2>
+            <div class="history-controls">
+              <!-- 呼び出し専用の日付選択欄とボタン -->
+              <input type="date" id="history-date">
+              <button type="button" class="load-btn" onclick="loadHistoryData()">🔄 過去データ呼出</button>
+              <button type="button" class="master-btn" onclick="openMasterModal()">⚙️ 商品マスター編集</button>
+            </div>
+          </div>
+          <table id="plan-table">
+            <thead>
+              <tr>
+                <th>予定商品名</th>
+                <th style="width: 100px;">予定数(杯)</th>
+                <th style="width: 120px;">単価(円)</th>
+                <th style="width: 130px;">見込み売上</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- JSで動的に追加 -->
+            </tbody>
+          </table>
+          <button type="button" class="add-row-btn" onclick="addPlanRow()">+ 商品行を追加</button>
+
+          <div class="total-box">
+            <div class="total-item">目標総数: <span id="plan-total-cups">0</span> 杯</div>
+            <div class="total-item">見込み売上: <span id="plan-total-sales">0</span> 円</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>ポジショニング（配置・担当・動線などを記入）</h2>
+          <div class="form-group">
+            <label>厨房（役割・動線）</label>
+            <input type="text" id="kitchen-input" placeholder="例：山田（ドリンク作成・調理サポート）">
+          </div>
+          <div class="form-group">
+            <label>接客（役割・動線）</label>
+            <input type="text" id="service-input" placeholder="例：佐藤（レジ・フロア案内・バッシング）">
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-save" onclick="submitToGAS('save_only')">💾 シートに保存のみ</button>
+          <button type="button" class="btn-pdf" onclick="submitToGAS('pdf')">📄 保存してPDF出力</button>
+        </div>
+      </div>
+
+      <!-- ② 営業後 タブ内容 -->
+      <div id="after-closing" class="tab-content">
+        <div class="card">
+          <h2>本時の売り上げ（実績）</h2>
+          <table id="sales-table">
+            <thead>
+              <tr>
+                <th>品名</th>
+                <th style="width: 100px;">売り上げ杯</th>
+                <th style="width: 120px;">1杯の値段(円)</th>
+                <th style="width: 130px;">売り上げ金額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- JSで動的に追加 -->
+            </tbody>
+          </table>
+          <button type="button" class="add-row-btn" onclick="addSalesRow()">+ 実績商品行を追加</button>
+
+          <div class="total-box">
+            <div class="total-item">本日の販売数: <span id="actual-total-cups">0</span> 杯</div>
+            <div class="total-item">本日の売上: <span id="actual-total-sales">0</span> 円</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>ふりかえり・分析</h2>
+          <div class="form-group"><label>① よかったこと・達成できたこと</label><textarea id="good-text"></textarea></div>
+          <div class="form-group"><label>② 改善点</label><textarea id="imp-text"></textarea></div>
+          <div class="form-group"><label>③ 改善点の原因</label><textarea id="cause-text"></textarea></div>
+          <div class="form-group"><label>④ 次回挑戦すること</label><textarea id="next-text"></textarea></div>
+        </div>
+
+        <div class="card">
+          <h2>お客様からのコメント</h2>
+          <div class="form-group"><textarea id="comment-text" placeholder="いただいた感想や気づきなどをご記入ください"></textarea></div>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn-save" onclick="submitToGAS('save_only')">💾 シートに保存のみ</button>
+          <button type="button" class="btn-pdf" onclick="submitToGAS('pdf')">📄 保存してPDF出力</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- 商品マスター編集用モーダル -->
+  <div id="master-modal" class="modal">
+    <div class="modal-content">
+      <h2>⚙️ 商品マスターの編集</h2>
+      <table id="master-table">
+        <thead>
+          <tr>
+            <th>商品名</th>
+            <th style="width: 120px;">単価(円)</th>
+            <th style="width: 60px;">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JSで展開 -->
+        </tbody>
+      </table>
+      <button type="button" class="add-row-btn" onclick="addMasterRow()">+ 新規商品を追加</button>
+      <div style="margin-top: 20px; display: flex; gap: 10px;">
+        <button type="button" class="btn-save" onclick="saveMasterData()">保存する</button>
+        <button type="button" class="master-btn" onclick="closeMasterModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx0pqe7cYm0raO3Ygr-_QzbDPwDigQoJ1YK1nq1EfYancM-plqOkHLGTGgXJqqxa9XuPw/exec';
+    let itemMaster = [];
+
+    // 出力日と呼び出し用の日付の初期値を「本日」に設定
+    const today = new Date();
+    document.getElementById('sheet-date').valueAsDate = today;
+    document.getElementById('history-date').valueAsDate = today;
+
+    window.onload = async function() {
+      await fetchItemMaster();
+      addPlanRow('アイスコーヒー', 0, 450);
+      addPlanRow('ホットコーヒー', 0, 400);
+      addSalesRow('アイスコーヒー', 0, 450);
+      addSalesRow('ホットコーヒー', 0, 400);
+    };
+
+    async function fetchItemMaster() {
+      try {
+        const response = await fetch(`${GAS_WEB_APP_URL}?action=get_master`);
+        const result = await response.json();
+        if (result.status === 'success') {
+          itemMaster = result.items;
+        }
+      } catch (e) {
+        console.error('マスター取得失敗', e);
+      }
+    }
+
+    function openTab(evt, tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+
+    function createSelectHTML(selectedName) {
+      let html = `<select onchange="onItemSelect(this)">`;
+      html += `<option value="">-- 選択してください --</option>`;
+      itemMaster.forEach(item => {
+        const selected = item.name === selectedName ? 'selected' : '';
+        html += `<option value="${item.name}" data-price="${item.price}" ${selected}>${item.name}</option>`;
+      });
+      html += `</select>`;
+      return html;
+    }
+
+    function onItemSelect(selectElem) {
+      const selectedOption = selectElem.options[selectElem.selectedIndex];
+      const price = selectedOption.getAttribute('data-price') || 0;
+      const row = selectElem.closest('tr');
+      const priceInput = row.querySelector('.plan-price, .sales-price');
+      if (priceInput) {
+        priceInput.value = price;
+        calculatePlanTotal();
+        calculateSalesTotal();
+      }
+    }
+
+    function addPlanRow(name = '', cups = 0, price = 0) {
+      const tbody = document.querySelector('#plan-table tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${createSelectHTML(name)}</td>
+        <td><input type="number" class="plan-cups" value="${cups}" min="0" oninput="calculatePlanTotal()"></td>
+        <td><input type="number" class="plan-price" value="${price}" min="0" oninput="calculatePlanTotal()"></td>
+        <td class="readonly-calc"><span class="plan-subtotal">0</span> 円</td>
+      `;
+      tbody.appendChild(tr);
+      calculatePlanTotal();
+    }
+
+    function addSalesRow(name = '', cups = 0, price = 0) {
+      const tbody = document.querySelector('#sales-table tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${createSelectHTML(name)}</td>
+        <td><input type="number" class="sales-cups" value="${cups}" min="0" oninput="calculateSalesTotal()"></td>
+        <td><input type="number" class="sales-price" value="${price}" min="0" oninput="calculateSalesTotal()"></td>
+        <td class="readonly-calc"><span class="sales-subtotal">0</span> 円</td>
+      `;
+      tbody.appendChild(tr);
+      calculateSalesTotal();
+    }
+
+    function calculatePlanTotal() {
+      let totalCups = 0, totalSales = 0;
+      document.querySelectorAll('#plan-table tbody tr').forEach(row => {
+        const c = parseFloat(row.querySelector('.plan-cups')?.value) || 0;
+        const p = parseFloat(row.querySelector('.plan-price')?.value) || 0;
+        const sub = c * p;
+        row.querySelector('.plan-subtotal').innerText = sub.toLocaleString();
+        totalCups += c;
+        totalSales += sub;
+      });
+      document.getElementById('plan-total-cups').innerText = totalCups.toLocaleString();
+      document.getElementById('plan-total-sales').innerText = totalSales.toLocaleString();
+    }
+
+    function calculateSalesTotal() {
+      let totalCups = 0, totalSales = 0;
+      document.querySelectorAll('#sales-table tbody tr').forEach(row => {
+        const c = parseFloat(row.querySelector('.sales-cups')?.value) || 0;
+        const p = parseFloat(row.querySelector('.sales-price')?.value) || 0;
+        const sub = c * p;
+        row.querySelector('.sales-subtotal').innerText = sub.toLocaleString();
+        totalCups += c;
+        totalSales += sub;
+      });
+      document.getElementById('actual-total-cups').innerText = totalCups.toLocaleString();
+      document.getElementById('actual-total-sales').innerText = totalSales.toLocaleString();
+    }
+
+    // ★ 過去データの呼出処理（ history-date から日付を取得 ）
+    async function loadHistoryData() {
+      const date = document.getElementById('history-date').value;
+      if (!date) {
+        alert('呼び出す日付を選択してください。');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${GAS_WEB_APP_URL}?action=get_history&date=${date}`);
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          document.getElementById('goal-text').value = data.goal || '';
+          document.getElementById('kitchen-input').value = data.kitchen || '';
+          document.getElementById('service-input').value = data.service || '';
+          document.getElementById('good-text').value = data.goodPoints || '';
+          document.getElementById('imp-text').value = data.improvements || '';
+          document.getElementById('cause-text').value = data.causes || '';
+          document.getElementById('next-text').value = data.nextActions || '';
+          document.getElementById('comment-text').value = data.customerComments || '';
+
+          if (data.plans && data.plans.length > 0) {
+            document.querySelector('#plan-table tbody').innerHTML = '';
+            data.plans.forEach(p => addPlanRow(p.name, p.cups, p.price));
+          }
+          if (data.sales && data.sales.length > 0) {
+            document.querySelector('#sales-table tbody').innerHTML = '';
+            data.sales.forEach(s => addSalesRow(s.name, s.cups, s.price));
+          }
+          alert(`${date} の過去データを呼び出しました。`);
+        } else {
+          alert(`${date} のデータは見つかりませんでした。`);
+        }
+      } catch (e) {
+        alert('過去データの取得に失敗しました。');
+      }
+    }
+
+    function openMasterModal() {
+      const tbody = document.querySelector('#master-table tbody');
+      tbody.innerHTML = '';
+      itemMaster.forEach(item => {
+        addMasterRow(item.name, item.price);
+      });
+      document.getElementById('master-modal').style.display = 'flex';
+    }
+
+    function closeMasterModal() {
+      document.getElementById('master-modal').style.display = 'none';
+    }
+
+    function addMasterRow(name = '', price = 0) {
+      const tbody = document.querySelector('#master-table tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="m-name" value="${name}"></td>
+        <td><input type="number" class="m-price" value="${price}"></td>
+        <td><button type="button" style="background:#dc3545; color:white; border:none; padding:5px; border-radius:4px; cursor:pointer;" onclick="this.closest('tr').remove()">削除</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    async function saveMasterData() {
+      const items = [];
+      document.querySelectorAll('#master-table tbody tr').forEach(row => {
+        const name = row.querySelector('.m-name').value;
+        const price = parseFloat(row.querySelector('.m-price').value) || 0;
+        if (name) items.push({ name, price });
+      });
+
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'save_master', items: items })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert('商品マスターを更新しました！');
+          await fetchItemMaster();
+          closeMasterModal();
+        }
+      } catch (e) {
+        alert('更新に失敗しました。');
+      }
+    }
+
+    async function submitToGAS(actionType) {
+      let hasNegative = false;
+      document.querySelectorAll('input[type="number"]').forEach(input => {
+        if (parseFloat(input.value) < 0) hasNegative = true;
+      });
+
+      if (hasNegative) {
+        alert('【入力エラー】杯数や単価にマイナス値を入力することはできません。');
+        return;
+      }
+
+      const goal = document.getElementById('goal-text').value;
+      if (!goal && !confirm('「本時の目標」が未入力です。このまま送信しますか？')) {
+        return;
+      }
+
+      const allBtns = document.querySelectorAll('.btn-save, .btn-pdf');
+      allBtns.forEach(btn => btn.disabled = true);
+
+      const plans = [];
+      document.querySelectorAll('#plan-table tbody tr').forEach(row => {
+        const name = row.querySelector('select').value;
+        const cups = parseFloat(row.querySelector('.plan-cups').value) || 0;
+        const price = parseFloat(row.querySelector('.plan-price').value) || 0;
+        if (name) plans.push({ name, cups, price });
+      });
+
+      const sales = [];
+      document.querySelectorAll('#sales-table tbody tr').forEach(row => {
+        const name = row.querySelector('select').value;
+        const cups = parseFloat(row.querySelector('.sales-cups').value) || 0;
+        const price = parseFloat(row.querySelector('.sales-price').value) || 0;
+        if (name) sales.push({ name, cups, price });
+      });
+
+      const formData = {
+        action: actionType,
+        date: document.getElementById('sheet-date').value, // 本日の日付で出力・保存
+        goal: goal,
+        plans: plans,
+        kitchen: document.getElementById('kitchen-input').value,
+        service: document.getElementById('service-input').value,
+        totalSalesCups: parseFloat(document.getElementById('actual-total-cups').innerText) || 0,
+        totalSalesAmount: parseFloat(document.getElementById('actual-total-sales').innerText) || 0,
+        sales: sales,
+        goodPoints: document.getElementById('good-text').value,
+        improvements: document.getElementById('imp-text').value,
+        causes: document.getElementById('cause-text').value,
+        nextActions: document.getElementById('next-text').value,
+        customerComments: document.getElementById('comment-text').value
+      };
+
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          alert(result.message);
+          if (result.pdfUrl) {
+            window.open(result.pdfUrl, '_blank');
+          }
+        } else {
+          alert('エラーが発生しました: ' + result.message);
+        }
+      } catch (error) {
+        alert('送信に失敗しました。ネットワーク接続をご確認ください。');
+        console.error(error);
+      } finally {
+        allBtns.forEach(btn => btn.disabled = false);
+      }
+    }
+  </script>
+</body>
+</html>
